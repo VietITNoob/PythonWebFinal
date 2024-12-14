@@ -583,7 +583,6 @@ ol {
 	-webkit-transform: rotate(45deg);
 	-ms-transform: rotate(45deg);
 	transform: rotate(45deg);
-	position: relative;
 	z-index: 1;
 	position: absolute;
 	left: -33px;
@@ -1258,10 +1257,10 @@ ol {
 	bottom: 12px;
 }
 
-.anime__video__player .plyr__control--overlaid {
-	background: transparent;
-	background: var(--plyr-video-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, transparent)));
-}
+/*.anime__video__player .plyr__control--overlaid {*/
+/*	background: transparent;*/
+/*	background: var(--plyr-video-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, transparent)));*/
+/*}*/
 
 .anime__video__player .plyr__control--overlaid svg {
 	height: 60px;
@@ -1317,7 +1316,7 @@ ol {
 	right: -14px;
 	top: 0;
 	content: "";
-	font-family: "FontAwesome";
+	font-family: "FontAwesome", monospace;
 }
 
 .breadcrumb__links span {

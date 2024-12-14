@@ -1,0 +1,142 @@
+/* Căn giữa và làm to tiêu đề cart-title */
+.cart-title {
+    text-align: center; /* Căn giữa ngang */
+    font-size: 36px; /* Làm chữ to hơn */
+    font-weight: bold; /* Đậm hơn */
+    color: white; /* Màu trắng */
+    margin-bottom: 30px; /* Tạo khoảng cách dưới */
+}
+
+.cart__table table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+.cart__table th {
+    background-color: #343a40;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.cart__table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart__table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.cart__table tr:hover {
+    background-color: #eaeaea;
+}
+
+.cart__item__pic img {
+    border-radius: 5px;
+    max-width: 100px;
+    height: auto;
+}
+
+.cart__btns a {
+    text-transform: uppercase;
+    padding: 10px 20px;
+    color: white;
+    background-color: #343a40;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.cart__btns a:hover {
+    background-color: #495057;
+}
+
+.cart__total h5 {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+    color: #333;
+}
+
+.primary-btn {
+    background-color: #f15e75 !important;
+    border: none;
+    font-weight: bold;
+}
+
+.primary-btn:hover {
+    background-color: #e14f63 !important;
+}
+.cart__table th {
+    background-color: #343a40;
+    color: white; /* Tiêu đề bảng màu trắng */
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.cart__table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    color: #000; /* Chữ trong bảng màu đen */
+    font-size: 16px; /* Làm chữ rõ nét hơn */
+}
+
+.cart__table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.cart__table tr:hover {
+    background-color: #eaeaea;
+}
+
+.cart__table {
+    width: 100%;
+    border-collapse: collapse; /* Loại bỏ khoảng cách giữa các ô */
+    text-align: center; /* Căn giữa ngang */
+}
+
+.cart__table th {
+    background-color: #343a40;
+    color: white;
+    padding: 12px;
+    text-align: center; /* Căn giữa ngang cho tiêu đề */
+    font-weight: bold;
+}
+
+.cart__table td {
+    padding: 12px;
+    vertical-align: middle; /* Căn giữa dọc */
+    border-bottom: 1px solid #ddd;
+    color: #000; /* Chữ đen */
+    font-size: 16px; /* Làm chữ rõ nét hơn */
+}
+
+.cart__table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.cart__table tr:hover {
+    background-color: #eaeaea;
+}
+
+.cart__table img {
+    display: block; /* Hình ảnh được coi như khối để hỗ trợ căn giữa */
+    margin: 0 auto; /* Căn giữa hình ảnh */
+}
+.cart__total h5 {
+    font-size: 24px; /* Làm chữ lớn hơn cho nổi bật */
+    font-weight: bold;
+    color: white; /* Đổi màu chữ thành trắng */
+    padding: 10px; /* Tạo khoảng cách bên trong để dễ nhìn */
+    border-radius: 8px; /* Làm bo góc */
+    margin-right: 40px;
+}
+
