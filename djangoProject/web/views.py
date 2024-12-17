@@ -44,7 +44,7 @@ def signup(request):
 def search(request):
     if request.method == 'POST':
         searched = request.POST['searched']
-        key = Prodcut.objects.filter(name__icontains=searched)
+        key = Product.objects.filter(name__icontains=searched)
     return render(request, '../templates/search.html', {'searched': searched, "key": key})
 
 
