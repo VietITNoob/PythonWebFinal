@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="{% static 'css/slicknav.min.css'%}" type="text/css">
     <link rel="stylesheet" href="{% static '/css/style.css ' %}" type="text/css">
 </head>
-
 <body>
     <!-- Page Preloder -->
     <div id="preloder">
@@ -165,6 +164,7 @@
                                         </ul>
                                         <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                         <div class="text-white"><h6>{{ product.price }}$</h6></div>
+                                        <a href="{% url 'add_to_cart' product.id %}" class="site-btn">Add to cart</a>
                                     </div>
                                 </div>
                             </div>
@@ -258,33 +258,23 @@
                             </ul>
                             <div class="filter__gallery">
                                 <div class="product__sidebar__view__item set-bg mix day years"
-                                data-setbg="img/sidebar/black-myth-wukong.png">
-                                <div class="ep"></div>
-                                <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                                data-setbg="{% static 'img/images/black-myth-wukong.png' %}">
                                 <h5><a href="#">Black Myth Wukong</a></h5>
                             </div>
                             <div class="product__sidebar__view__item set-bg mix month week"
-                            data-setbg="{% static 'img/sidebar/wuthering-waves2.jpg' %}">
-                            <div class="ep"></div>
-                            <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                            data-setbg="{% static 'img/images/lol.jpg' %}">
                             <h5><a href="#">League of legends</a></h5>
                         </div>
                         <div class="product__sidebar__view__item set-bg mix week years"
-                        data-setbg="img/sidebar/gta5.png">
-                        <div class="ep"></div>
-                        <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                        data-setbg="{% static 'img/images/gta5.png' %}">
                         <h5><a href="#">Grand Thef Auto V</a></h5>
                     </div>
                     <div class="product__sidebar__view__item set-bg mix years month"
-                    data-setbg="img/sidebar/fornite.jpg">
-                    <div class="ep"></div>
-                    <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                    data-setbg="{% static 'img/images/fornite.jpg' %}">
                     <h5><a href="#">Fornite</a></h5>
                 </div>
                 <div class="product__sidebar__view__item set-bg mix day"
-                data-setbg="img/sidebar/pubg.jpg">
-                <div class="ep"></div>
-                <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                data-setbg="{% static 'img/images/pubg.jpg' %}">
                 <h5><a href="#">PlayerUnknown's Battlegrounds</a></h5>
             </div>
         </div>
@@ -299,8 +289,7 @@
             </div>
             <div class="product__sidebar__comment__item__text">
                 <ul>
-                    <li>Action</li>
-                    <li>RPG</li>
+                    <li>Base Game</li>
                 </ul>
                 <h5><a href="#">Valorant</a></h5>
             </div>
@@ -311,8 +300,7 @@
             </div>
             <div class="product__sidebar__comment__item__text">
                 <ul>
-                    <li>Action</li>
-                    <li>RPG</li>
+                     <li>Base Game</li>
                 </ul>
                 <h5><a href="#">Counter-Strike 2</a></h5>
             </div>
@@ -323,8 +311,7 @@
             </div>
             <div class="product__sidebar__comment__item__text">
                 <ul>
-                    <li>Action</li>
-                    <li>RPG</li>
+                   <li>Base Game</li> >
                 </ul>
                 <h5><a href="#">Wuthering Waves</a></h5>
             </div>
@@ -335,8 +322,7 @@
             </div>
             <div class="product__sidebar__comment__item__text">
                 <ul>
-                    <li>Action</li>
-                    <li>RPG</li>
+                    <li>Base Game</li>
                 </ul>
                 <h5><a href="#">PlayerUnknown's Battlegrounds</a></h5>
             </div>
