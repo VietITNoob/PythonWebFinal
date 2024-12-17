@@ -35,13 +35,13 @@
         <div class="loader"></div>
     </div>
    <!-- Header Section Begin -->
-   <header class="header">
+<header class="header">
     <div class="container">
         <div class="row">
             <div class="col-lg-2">
                 <div class="header__logo">
                     <a href="{% url 'home' %}">
-                        <img src="{% static 'img/logo1.png' %}" alt="">
+                        <img src="{% static 'img/logo2.png' %}" alt="">
                     </a>
                 </div>
             </div>
@@ -60,8 +60,8 @@
                                     <li><a href="./login.html">Login</a></li>
                                 </ul>
                             </li>
-                            <li><a href="./blog.html">Our Blog</a></li>
-                            <li><a href="#">Contacts</a></li>
+                            <li><a href="{% url 'view_cart' %}">Cart</a></li>
+
                         </ul>
                     </nav>
                 </div>
@@ -73,12 +73,10 @@
                         <a href="{% url 'logout' %}"><i class="fa-solid fa-right-to-bracket"></i></a>
                     {% else %}
                         <a href="{% url 'login' %}"><i class="fa-solid fa-user"></i></a>
-                
                     {% endif %}
                 </div>
             </div>
         </div>
-        <div id="mobile-menu-wrap"></div>
     </div>
 </header>
 <!-- Header End -->

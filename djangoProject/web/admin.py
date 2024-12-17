@@ -5,6 +5,9 @@ admin.site.register(Category)
 admin.site.register(Product)
 admin.site.register(Oder)
 admin.site.register(Oder_Iterm)
+admin.site.register(Publisher)
+admin.site.register(Developer)
+
 
 
 

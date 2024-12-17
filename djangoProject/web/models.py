@@ -4,6 +4,15 @@ from django.contrib.auth.forms import UserCreationForm
 from mlxtend.frequent_patterns import apriori,association_rules
 import pandas as pd
 # Create your models here.
+class Publisher(models.Model):
+    id = models.AutoField(primary_key=True)  # Automatically generated ID
+    name = models.CharField(max_length=255, unique=True)  # Unique name for the publisher
+    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
+
+class Developer(models.Model):
+    id = models.AutoField(primary_key=True)  # Automatically generated ID
+    name = models.CharField(max_length=255, unique=True)  # Unique name for the developer
+    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 class Category(models.Model):
     sub_category = models.ForeignKey('self', on_delete=models.CASCADE, related_name='sub_categrory' ,null=True, blank=True)
     is_sub = models.BooleanField(default=False)
@@ -18,6 +27,9 @@ class Product(models.Model):
     price = models.FloatField()
     image = models.ImageField(upload_to = 'images/', null = True, blank = True)
     category = models.ManyToManyField(Category, related_name='products', blank=True)
+    release_date = models.DateField(null=True, blank=True)
+    developer = models.ForeignKey(Developer, on_delete=models.SET_NULL, null=True, blank=True)
+    publisher = models.ForeignKey(Publisher, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -93,3 +105,4 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
