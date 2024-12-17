@@ -15,7 +15,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class Prodcut(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=100, null = True)
     status = models.CharField(max_length=20, choices=[('available', 'Available'), ('unavailable', 'Unavailable'), ('coming_soon', 'Coming Soon')], null = True)
     price = models.FloatField()
@@ -31,6 +31,10 @@ class Prodcut(models.Model):
         except:
             url = ''
         return url
+
+    def get_slug(self):
+        slugs = [cat.slug for cat in self.category.all()]  # Lấy slug của tất cả các danh mục
+        return ''.join(f'<li>{slug}</li>' for slug in slugs)   # Trả về danh sách các slug
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -41,7 +45,7 @@ class Oder(models.Model):
         return str(self.id)
 
 class Oder_Iterm(models.Model):
-    product = models.ForeignKey(Prodcut, on_delete=models.SET_NULL, null = True, blank = True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
     oder = models.ForeignKey(Oder, on_delete=models.SET_NULL, null=True, blank=True)
     date_order = models.DateField(auto_now_add=True)
     quantity = models.IntegerField(default=0, null = True, blank = True)

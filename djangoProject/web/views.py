@@ -3,16 +3,12 @@ from django.http import HttpResponse
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Prodcut
-
 
 # Create your views here.
 def home(request):
-    products = Prodcut.objects.all()
+    products = Product.objects.all()
     context = {'products': products}
     return render(request, '../templates/index.html', context)
-
-
 def loginPage(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -79,70 +75,7 @@ def view_cart(request):
 
 
 # Thêm một sản phẩm vào giỏ hàng
-def add_to_cart(request, product_id):
-    product = Prodcut.objects.get(id=product_id)  # Lấy sản phẩm từ ID
-
-    # Nếu giỏ hàng chưa tồn tại trong session, tạo mới một giỏ hàng là từ điển
-    if 'cart' not in request.session:
-        request.session['cart'] = {}
-
-    # Lấy giỏ hàng từ session
-    cart = request.session['cart']
-    product_exists = False
-
-    # Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-    if str(product.id) in cart:
-        cart[str(product.id)]['quantity'] += 1  # Tăng số lượng nếu sản phẩm đã có trong giỏ
-        product_exists = True
-
-    # Nếu sản phẩm chưa có, thêm sản phẩm mới vào giỏ hàng
-    if not product_exists:
-        cart[str(product.id)] = {
-            'name': product.name,
-            'price': product.price,
-            'image_url': product.image.url,
-            'quantity': 1
-        }
-
-    # Cập nhật giỏ hàng trong session
-    request.session['cart'] = cart
-    return redirect('view_cart')  # Chuyển hướng đến trang giỏ hàng
 
 
 # Xóa sản phẩm khỏi giỏ hàng
-def remove_from_cart(request, product_id):
-    # Lấy giỏ hàng từ session
-    cart = request.session.get('cart', {})
 
-    # Nếu sản phẩm có trong giỏ hàng, xóa nó đi
-    if str(product_id) in cart:
-        del cart[str(product_id)]  # Xóa sản phẩm khỏi giỏ hàng
-
-    # Cập nhật lại giỏ hàng vào session
-    request.session['cart'] = cart
-
-    return redirect('view_cart')  # Chuyển hướng đến trang giỏ hàng
-
-
-def update_quantity(request, product_id, action):
-    # Lấy giỏ hàng từ session
-    cart = request.session.get('cart', {})
-
-    # Chuyển product_id sang chuỗi để xử lý
-    product_id = str(product_id)
-
-    # Nếu sản phẩm tồn tại trong giỏ hàng
-    if product_id in cart:
-        if action == 'increase':
-            cart[product_id]['quantity'] += 1  # Tăng số lượng
-        elif action == 'decrease':
-            if cart[product_id]['quantity'] > 1:
-                cart[product_id]['quantity'] -= 1  # Giảm số lượng
-            else:
-                del cart[product_id]  # Xóa sản phẩm nếu số lượng = 0
-
-    # Lưu giỏ hàng mới vào session
-    request.session['cart'] = cart
-
-    # Điều hướng quay lại trang giỏ hàng
-    return redirect('view_cart')
