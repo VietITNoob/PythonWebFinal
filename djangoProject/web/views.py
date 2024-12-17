@@ -1,3 +1,5 @@
+from lib2to3.fixes.fix_input import context
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import *
@@ -49,7 +51,20 @@ def search(request):
 
 
 def productDetails(request):
-    return render(request, '../templates/ProductDetails.html')
+    if request.user.is_authenticated:
+        customer = request.user
+        order, created = Oder.objects.get_or_create(customer=customer,complete=False)
+        items = order.oder_iterm_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_iterm':0, 'get_cart_total':0}
+        cartItems = order['get_cart_iterm']
+    Id = request.GET.get('id','')
+    products = Product.objects.filter(id=Id)
+    categories = Category.objects.filter(is_sub = False)
+    context = {'product':products ,'categories':categories, 'items':items, 'order':order, 'cartItems':cartItems }
+    return render(request, '../templates/ProductDetails.html',context)
 
 
 # chức năng thêm vào giỏ hàng
@@ -75,7 +90,5 @@ def view_cart(request):
 
 
 # Thêm một sản phẩm vào giỏ hàng
-
-
 # Xóa sản phẩm khỏi giỏ hàng
 

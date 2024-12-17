@@ -716,6 +716,13 @@ ol {
 	font-weight: 700;
 	line-height: 26px;
 }
+.product__item__text h6 {
+	color: #ffffff;
+}
+.product__item__text .section-title h6 {
+	color: #ffffff;
+	font: 300;
+}
 .product__sidebar h6 {
 	color: #ffffff;
 }

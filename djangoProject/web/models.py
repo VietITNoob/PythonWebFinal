@@ -1,11 +1,8 @@
-from datetime import datetime
-from itertools import product
-from tkinter.constants import FALSE
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-
+from mlxtend.frequent_patterns import apriori,association_rules
+import pandas as pd
 # Create your models here.
 class Category(models.Model):
     sub_category = models.ForeignKey('self', on_delete=models.CASCADE, related_name='sub_categrory' ,null=True, blank=True)
@@ -35,6 +32,31 @@ class Product(models.Model):
     def get_slug(self):
         slugs = [cat.slug for cat in self.category.all()]  # Lấy slug của tất cả các danh mục
         return ''.join(f'<li>{slug}</li>' for slug in slugs)   # Trả về danh sách các slug
+
+    def get_recommendations(self):
+        
+        # Lấy tất cả các đơn hàng
+        orders = Oder.objects.all()
+        
+        # Tạo DataFrame từ các đơn hàng
+        order_data = []
+        for order in orders:
+            items = order.oder_iterm_set.all()
+            order_data.append([item.product.id for item in items])
+        
+        # Chuyển đổi dữ liệu thành DataFrame
+        df = pd.DataFrame(order_data)
+        
+        # Tính toán các quy tắc kết hợp
+        frequent_itemsets = apriori(df, min_support=0.01, use_colnames=True)
+        rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1)
+        
+        # Lấy các sản phẩm liên quan đến sản phẩm hiện tại
+        related_products = rules[rules['antecedents'].apply(lambda x: self.id in x)]
+        
+        # Trả về danh sách các sản phẩm gợi ý
+        return [Product.objects.get(id=product_id) for product_id in related_products['consequents']]
+
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -43,7 +65,16 @@ class Oder(models.Model):
 
     def __str__(self):
         return str(self.id)
-
+    @property
+    def get_cart_items(self):
+        orderiterm = self.oder_iterm_set.all()
+        total = sum([item.quantity for item in orderiterm])
+        return total
+    @property
+    def get_cart_total(self):
+        orderiterm = self.oder_iterm_set.all()
+        total = sum([item.get_total for item in orderiterm])
+        return total
 class Oder_Iterm(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
     oder = models.ForeignKey(Oder, on_delete=models.SET_NULL, null=True, blank=True)
@@ -53,6 +84,11 @@ class Oder_Iterm(models.Model):
 
     def __str__(self):
         return str(self.id)
+    @property
+    def get_total(self):
+        total = self.product.price * self.quantity
+        return total
+
 class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
