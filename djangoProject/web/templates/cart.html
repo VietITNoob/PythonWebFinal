@@ -55,7 +55,6 @@
                                 <ul class="dropdown">
                                     <li><a href="./categories.html">Categories</a></li>
                                     <li><a href="ProductDetails.html">New Games</a></li>
-                                    <li><a href="./anime-watching.html">Upcoming</a></li>
                                     <li><a href="./blog-details.html">Blog Details</a></li>
                                     <li><a href="./signup.html">Sign Up</a></li>
                                     <li><a href="./login.html">Login</a></li>
@@ -102,38 +101,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% if cart_items %}
-                                {% for product_id, item in cart_items.items %}
+                                {% for item in items %}
+                                    {% if item %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
                                         <td>
                                             <div class="cart__item__pic">
-                                                <img src="{{ item.image_url }}" alt="{{ item.name }}" width="150" height="auto">
+                                                <img src="{{ item.product.ImageURL }}" alt="{{ item.product.name }}" width="150" height="auto">
                                             </div>
                                         </td>
-                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.product.name }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity('{{ product_id }}', 'decrease')">-</button>
                                             <span>{{ item.quantity }}</span>
-                                            <button type="button" class="btn btn-outline-secondary" onclick="updateQuantity('{{ product_id }}', 'increase')">+</button>
                                         </td>
-                                        <td>{{ item.price }}</td>
-                                        <td>{{ item.total }}</td>
+                                        <td>{{ item.product.price }}</td>
+                                        <td>{{ oder_iterm.get_total }}</td>
                                         <td>
-                                            <a href="{% url 'remove_from_cart' product_id %}" class="btn btn-danger">Remove</a>
+                                            <a href="#" class="btn btn-danger">Remove</a>
                                         </td>
                                     </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7">No games in your cart</td>
+                                        </tr>
+                                    {% endif %}
                                 {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="7">No games in your cart</td>
-                                </tr>
-                            {% endif %}
                         </tbody>
                     </table>
                 </div>
                 <div class="cart__total">
-                    <h5>Total: {{ total_price }}</h5>
+                    <h5>Total: {{ oder.get_cart_total }}</h5>
                 </div>
                 <div class="cart__btns">
                     <a href="{% url 'home' %}" class="primary-btn">Continue Shopping</a>
@@ -144,46 +141,18 @@
     </div>
 </section>
 <!-- Cart Section End -->
-
-<script>
-    // Function to update product quantity (increase or decrease)
-     function updateQuantity(productId, action) {
-        const url = `/update-cart/${productId}/${action}/`;
-        window.location.href = url;
-    }
-    <script>
-        function updateQuantity(productId, action) {
-            var quantityElement = document.getElementById('quantity-' + productId);
-            var currentQuantity = parseInt(quantityElement.innerText);
-
-            // Điều chỉnh số lượng
-            var newQuantity = action === 'increase' ? currentQuantity + 1 : (currentQuantity > 1 ? currentQuantity - 1 : 1);
-
-            // Cập nhật lại số lượng trên giao diện người dùng
-            quantityElement.innerText = newQuantity;
-
-            // Gửi yêu cầu tới server để cập nhật số lượng
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'update_quantity' %}",  // Thay 'update_quantity' bằng tên URL bạn đã định nghĩa
-                data: {
-                    'product_id': productId,
-                    'quantity': newQuantity,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    console.log("Cập nhật thành công:", response);
-                },
-                error: function(xhr, status, error) {
-                    console.log("Lỗi khi cập nhật:", error);
-                    // Nếu có lỗi, khôi phục lại số lượng ban đầu
-                    quantityElement.innerText = currentQuantity;
-                }
-            });
-    }
-    </script>
-</script>
 <!-- end main content -->
+<!-- Search model Begin -->
+  <div class="search-model">
+    <div class="h-100 d-flex align-items-center justify-content-center">
+        <div class="search-close-switch"><i class="icon_close"></i></div>
+        <form class="search-model-form" method="post" action="{% url 'search' %}">
+            {% csrf_token %}
+            <input name="searched" type="text" id="search-input" placeholder="Search here.....">
+        </form>
+    </div>
+</div>
+<!-- Search model end -->
 <!-- Js Plugins -->
     <script src="{% static '/js/jquery-3.3.1.min.js'%}"></script>
     <script src="{% static '/js/bootstrap.min.js'%}"></script>

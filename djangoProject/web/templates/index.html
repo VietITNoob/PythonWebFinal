@@ -61,7 +61,6 @@
                                 </ul>
                             </li>
                             <li><a href="{% url 'view_cart' %}">Cart</a></li>
-
                         </ul>
                     </nav>
                 </div>
@@ -152,17 +151,14 @@
 
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
-                                    <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}">
-                                        <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                                        <div class="view"><i class="fa fa-eye"></i> 9141</div>
-                                    </div>
+                                    <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}"></div>
                                     <div class="product__item__text">
                                         <ul>
                                             <li>Base Game</li>
                                         </ul>
                                         <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                         <div class="text-white"><h6>{{ product.price }}$</h6></div>
-                                        <a href="{% url 'add_to_cart' product.id %}" class="site-btn">Add to cart</a>
+                                        <button data-product={{ product.id }} data-action="add" class="update-cart"></button>
                                     </div>
                                 </div>
                             </div>
@@ -381,5 +377,25 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script type="text/javascript">
+        var user = '{{ request.user }}'
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+            const csrftoken = getCookie('csrftoken');
+    </script>
 </body>
 </html>
