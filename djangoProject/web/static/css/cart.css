@@ -139,4 +139,6 @@
     border-radius: 8px; /* Làm bo góc */
     margin-right: 40px;
 }
-
+.cart__btns{
+    padding-bottom: 40px;
+}
