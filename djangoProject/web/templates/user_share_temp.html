@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+    /* Đặt chung cho toàn trang */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Bố cục chung với sidebar và nội dung */
+.container-lef-rig {
+    display: flex;
+    min-height: 480px;  
+}
+
+/* Sidebar */
+.sidebar {
+    width: 25%; /* Tăng độ rộng sidebar */
+    background: linear-gradient(135deg, #4b79a1, #283e51); /* Hiệu ứng gradient */
+    padding: 20px;
+    color: #fff;
+    box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Liên kết trong Sidebar */
+.sidebar a {
+    display: block;
+    margin: 15px 0;
+    padding: 12px 15px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #fff;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hiệu ứng hover trong sidebar */
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(10px); /* Dịch nhẹ khi hover */
+}
+
+/* Tiêu đề sidebar */
+.sidebar h2 {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #eceff1;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding-bottom: 10px;
+}
+
+/* Nội dung chính */
+.content {
+    width: 75%;
+    padding: 30px;
+    {% comment %} border-left: 1px solid #eee; {% endcomment %}
+}
+/* Tiêu đề trong content */
+.content h1 {
+    text-align: center;
+    font-size: 28px;
+    color:rgb(170, 198, 226);
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+.sidebar a.open {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-lef-rig {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .sidebar a {
+        margin: 10px auto;
+        width: 90%;
+    }
+
+    .content {
+        width: 100%;
+        padding: 20px;
+        margin-top: 10px;
+    }
+    
+}
+
+</style>
+{%block css_user%}{%endblock%}
+{% endblock extra_css %}
+
+
+
+{% block content %}
+<div class="container-lef-rig">
+ <!-- Phần Sidebar (20%) -->
+ <div class="sidebar">
+    {% comment %} <h2>Menu</h2> {% endcomment %}
+    <a class="{% if request.path == '/user_information/' %}open{% endif %}" href="{% url 'user_information' %}">Information</a>
+    <a class="{% if request.path == '/user_history/' %}open{% endif %}" href="{% url 'user_history' %}">History</a>
+    <a class="{% if request.path == '/user_wishlist/' %}open{% endif %}" href="{% url 'user_wishlist' %}" >Wishlist</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<!-- Phần Nội dung (80%) -->
+<div class="content">
+    {% comment %} <title style="color= white"><strong>-{% block right_title %}TITLE{% endblock %}-</strong></title> {% endcomment %}
+    <!-- Nội dung thay đổi sẽ nằm ở đây -->
+    {% block right_content %}     
+    {% endblock %}
+</div>
+</div>
+{% endblock content %}

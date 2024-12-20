@@ -77,16 +77,19 @@ class Oder(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
     @property
     def get_cart_items(self):
         orderiterm = self.oder_iterm_set.all()
         total = sum([item.quantity for item in orderiterm])
         return total
+    
     @property
     def get_cart_total(self):
         orderiterm = self.oder_iterm_set.all()
         total = sum([item.get_total for item in orderiterm])
         return total
+
 class Oder_Iterm(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
     oder = models.ForeignKey(Oder, on_delete=models.SET_NULL, null=True, blank=True)
@@ -96,6 +99,7 @@ class Oder_Iterm(models.Model):
 
     def __str__(self):
         return str(self.id)
+        #   return f"OrderItem {self.id} for {self.user}"
     @property
     def get_total(self):
         total = self.product.price * self.quantity

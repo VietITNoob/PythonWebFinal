@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-    
 {% load static %}
 {% block content %}
     <!-- Hero Section Begin -->
@@ -80,7 +79,8 @@
                                         </ul>
                                         <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                         <div class="text-white"><h6>{{ product.price }}$</h6></div>
-                                        <button data-product={{ product.id }} data-action="add" class="btn btn-danger update-cart">add to cart</button>
+                                        {% comment %} <button data-product={{ product.id }} data-action="add" class="btn btn-danger update-cart">add to cart</button> {% endcomment %}
+                                        <a href="{% url 'add_to_cart' product.id %}" class="site-btn">Add to cart</a>
                                     </div>
                                 </div>
                             </div>

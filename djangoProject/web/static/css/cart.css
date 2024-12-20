@@ -140,5 +140,8 @@
     margin-right: 40px;
 }
 .cart__btns{
-    padding-bottom: 40px;
+    display: flex;
+    /* flex-direction: row; */
+    gap: 40%;
 }
+

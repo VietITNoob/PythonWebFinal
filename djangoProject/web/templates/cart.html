@@ -2,9 +2,35 @@
 {% load static %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static '/css/cart.css ' %}" type="text/css">
+<style>
+    .cart__btns{
+        display: flex;
+        /* flex-direction: row; */
+        gap: 68%;
+    }
+    #buy-btn{
+        background: linear-gradient(135deg, #f7b731, #f39c12) !important;
+        color: white !important; 
+        padding: 12px 25px !important; 
+        font-size: 18px !important; 
+        font-weight: bold !important;
+        border: none !important; 
+        border-radius: 8px !important; 
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2) !important; /* Thêm bóng đổ để tạo chiều sâu */
+        cursor: pointer !important; /* Đổi con trỏ chuột thành hình bàn tay khi di chuột vào */
+        transition: all 0.3s ease !important; /* Hiệu ứng chuyển động mượt mà */
+    }
+
+    /* Hiệu ứng hover cho nút BUY */
+    #buy-btn:hover {
+        background: linear-gradient(135deg, #f39c12, #f7b731) !important; /* Đảo chiều gradient */
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3) !important; /* Tăng bóng đổ */
+        color: #333 !important; /* Đổi màu chữ thành xám đậm */
+    }
+</style>
 {%endblock%}
 {% block content %}
-<!-- main content -->
+{% comment %} <!-- main content -->
   <!-- Cart Section Begin -->
 <section class="cart spad">
     <div class="container">
@@ -59,6 +85,85 @@
                 <div class="cart__btns" style="padding-bottom: 50px">
                     <a href="{% url 'home' %}" class="primary-btn">Continue Shopping</a>
                     <a href="#" class="primary-btn">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Cart Section End --> {% endcomment %}
+
+ <!-- Cart Section Begin -->
+ <section class="cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="cart-title">Your Shopping Cart</h3>
+                <div class="cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if cart_items %}
+                                {% for product_id, item in cart_items.items %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <div class="cart__item__pic">
+                                                <img src="{{ item.image_url }}" alt="{{ item.name }}" width="150" height="auto">
+                                            </div>
+                                        </td>
+                                        <td>{{ item.name }}</td>
+                                        <td>
+                                            <div class="quantity-container" style="display: flex; justify-content: center; align-items: center;">
+                                                <form method="POST" action="{% url 'update_quantity' %}" class="quantity-form-left">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product_id }}">
+                                                    <input type="hidden" name="action" value="decrease">
+                                                    <button type="submit" class="btn btn-outline-secondary quantity-btn">-</button>
+                                                </form>
+                                                <span id="quantity-{{ product_id }}" class="quantity-value" style="margin: 0 10px; text-align: center;">{{ item.quantity }}</span>
+                                                <form method="POST" action="{% url 'update_quantity' %}" class="quantity-form">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product_id }}">
+                                                    <input type="hidden" name="action" value="increase">
+                                                    <button type="submit" class="btn btn-outline-secondary quantity-btn">+</button>
+                                                </form>
+                                            </div>
+                                        </td>                                        
+                                        <td>{{ item.price }}</td>
+                                        <td>{{ item.total }}</td>
+                                        <td>
+                                            <a href="{% url 'remove_from_cart' product_id %}" class="btn btn-danger">Remove</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7">No games in your cart</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cart__total">
+                    <h5>Total: {{ total_price }}</h5>
+                </div>
+                <div class="cart__btns">
+                    <a href="{% url 'home' %}" class="primary-btn">Continue Shopping</a>
+                    {% comment %} <a href="#" class="primary-btn buy" action="{% url 'buy' %}" method="POST">BUY</a> {% endcomment %}
+                    <form method="POST" action="{% url 'buy' %}">
+                        {% csrf_token %}
+                        <button id="buy-btn" class="primary-btn buy">BUY</button>
+                    </form>
                 </div>
             </div>
         </div>
