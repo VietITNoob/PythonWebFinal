@@ -2,7 +2,6 @@ from lib2to3.fixes.fix_input import context
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from flask_login import login_required
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -64,7 +63,7 @@ def productDetails(request):
     Id = request.GET.get('id','')
     products = Product.objects.filter(id=Id)
     categories = Category.objects.filter(is_sub = False)
-    context = {'product':products ,'categories':categories, 'items':items, 'order':order, 'cartItems':cartItems }
+    context = {'products':products ,'categories':categories, 'items':items, 'order':order, 'cartItems':cartItems }
     return render(request, '../templates/ProductDetails.html',context)
 
 
@@ -151,7 +150,11 @@ def add_to_cart(request, product_id):
 
     # Cập nhật giỏ hàng trong session
     request.session['cart'] = cart
-    return redirect('view_cart')  # Chuyển hướng đến trang giỏ hàng
+    
+    # Thêm thông báo thành công
+    messages.success(request, f'Added {product.name} to cart!')  # Thông báo sản phẩm đã được thêm vào giỏ hàng
+
+    return JsonResponse({'message': f'Added {product.name} to cart!'}, status=200)  # Trả về thông báo thành công
 
 
 # Xóa sản phẩm khỏi giỏ hàng
@@ -229,39 +232,7 @@ def buy(request):
     else:
         messages.error(request, "Your shopping cart don't have any product!")
         return redirect('view_cart') 
-    
-def buy(request):
-    # Kiểm tra nếu người dùng chưa đăng nhập
-    if not request.user.is_authenticated:
-        return redirect('login')  # chuyển hướng đến trang đăng nhập
 
-    cart_items = request.session.get('cart', {})
-
-    if cart_items:  # Nếu giỏ hàng không trống
-        # Tạo oder mới
-        oder = Oder.objects.create(
-            customer=request.user,
-            
-            # price=sum(item['price'] * item['quantity'] for item in cart_items.values()),
-        )
-
-        # Thêm các OrderItem (chi tiết hóa đơn)
-        for product_id, item in cart_items.items():
-            product = Product.objects.get(id=product_id)
-            Oder_Iterm.objects.create( #tạo CT_HD
-                product=product,
-                oder=oder,
-                quantity=item['quantity'],
-            )
-        # Xóa giỏ hàng sau khi xử lý thành công
-        del request.session['cart']
-
-        # return render(request, 'cart/checkout_success.html', {'order': order}) 
-        messages.success(request, "Purchase successful!")
-        return redirect('home') 
-    else:
-        messages.error(request, "Your shopping cart don't have any product!")
-        return redirect('view_cart') 
 
 def user_share_temp(request):
     return render(request,'../templates/user_share_temp.html')
@@ -323,3 +294,6 @@ def user_history(request):
 
 def user_wishlist(request):
     return render(request,'../templates/user_wishlist.html')
+
+def checkout(request):
+    return render(request,'../templates/checkout.html')

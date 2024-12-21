@@ -30,6 +30,7 @@ class Product(models.Model):
     release_date = models.DateField(null=True, blank=True)
     developer = models.ForeignKey(Developer, on_delete=models.SET_NULL, null=True, blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -41,9 +42,8 @@ class Product(models.Model):
             url = ''
         return url
 
-    def get_slug(self):
-        slugs = [cat.slug for cat in self.category.all()]  # Lấy slug của tất cả các danh mục
-        return ''.join(f'<li>{slug}</li>' for slug in slugs)   # Trả về danh sách các slug
+    def get_all_categories(self):
+        return ', '.join([category.name for category in self.category.all()])
 
     def get_recommendations(self):
         
