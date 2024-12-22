@@ -5,44 +5,20 @@
     <section class="hero">
         <div class="container">
             <div class="hero__slider owl-carousel">
-                <div class="hero__items set-bg" data-setbg="img/hero/cs2-banner.jpg">
+                {% for product in products|slice:":3" %}
+                <div class="hero__items set-bg" data-setbg="{{ product.ImageURL }}">
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="hero__text">
-                                <div class="label">FPS</div>
-                                <h2>Counter-Strike 2</h2>
-                                <p>Counter-Strike 2 is a multiplayer tactical first-person shooter, in which two teams, the Counter-Terrorists and the Terrorists, compete to complete different objectives, depending on the game mode selected.</p>
-                                <a href="{% url 'productDetail' %}"><span>Free play Now</span> <i class="fa fa-angle-right"></i></a>
+                                <div class="label">{{ product.label }}</div>
+                                <h2>{{ product.name }}</h2>
+                                <p>{{ product.description }}</p>
+                                <a href="{% url 'productDetail' %}?id={{ product.id }}"><span>Free play Now</span> <i class="fa fa-angle-right"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="hero__items set-bg" data-setbg="img/hero/genshin-impact-banner.jpg">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="hero__text">
-                                <div class="label">Adventure </div>
-                                <div class="label">MMORPG </div>
-                                <h2>Genshin impact</h2>
-                                <p>an open-world, action role-playing game that allows the player to control one of four interchangeable characters in a party</p>
-                                <a href="#"><span>Free play Now</span> <i class="fa fa-angle-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero__items set-bg" data-setbg="img/hero/honkai-starrail-banner.jpg">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="hero__text">
-                                <div class="label">Adventure</div>
-                                <div class="label">RPG</div>
-                                <h2>Honkai: Star Rail</h2>
-                                <p>a new HoYoverse space fantasy RPG. Hop aboard the Astral Express and experience the galaxy's infinite wonders filled with adventure and thrills. Players will meet new companions across various worlds and maybe even run into some familiar faces.</p>
-                                <a href="#"><span>Free play Now</span> <i class="fa fa-angle-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -66,7 +42,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            {% for product in products  %}
+                             {% for product in products|slice:":8" %}
                                 {% if product.price > 0.0 %}
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
@@ -77,8 +53,6 @@
                                         </ul>
                                         <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                         <div class="text-white"><h6>{{ product.price }}$</h6></div>
-                                        {% comment %} <button data-product={{ product.id }} data-action="add" class="btn btn-danger update-cart">add to cart</button> {% endcomment %}
-                                        <a href="{% url 'add_to_cart' product.id %}" class="site-btn">Add to cart</a>
                                     </div>
                                 </div>
                             </div>
@@ -100,7 +74,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            {% for product in products %}
+                            {% for product in products|slice:":10" %}
                                 {% if product.price == 0.0 %}
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
@@ -110,7 +84,7 @@
                                         <ul>
                                             <li>Base</li>
                                         </ul>
-                                        <h5><a href="{% url 'productDetail' %}">{{ product.name }}</a></h5>
+                                        <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                         <div class="text-white">
                                             <h6>Free to play</h6>
                                         </div>
@@ -146,10 +120,9 @@
                                             </div>
                                             <div class="product__item__text">
                                                 <ul>
-                                                    <li>Active</li>
-                                                    <li>Movie</li>
+                                                    <li>Base</li>
                                                 </ul>
-                                                <h5><a href="#">{{ product.name }}</a></h5>
+                                                <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                             </div>
                                         </div>
                                     </div>

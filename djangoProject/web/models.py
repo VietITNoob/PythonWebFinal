@@ -4,15 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from mlxtend.frequent_patterns import apriori,association_rules
 import pandas as pd
 # Create your models here.
-class Publisher(models.Model):
-    id = models.AutoField(primary_key=True)  # Automatically generated ID
-    name = models.CharField(max_length=255, unique=True)  # Unique name for the publisher
-    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 
-class Developer(models.Model):
-    id = models.AutoField(primary_key=True)  # Automatically generated ID
-    name = models.CharField(max_length=255, unique=True)  # Unique name for the developer
-    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 class Category(models.Model):
     sub_category = models.ForeignKey('self', on_delete=models.CASCADE, related_name='sub_categrory' ,null=True, blank=True)
     is_sub = models.BooleanField(default=False)
@@ -20,7 +12,21 @@ class Category(models.Model):
     slug = models.SlugField(max_length=200, null = True)
     def __str__(self):
         return self.name
+class Publisher(models.Model):
+    id = models.AutoField(primary_key=True)  # Automatically generated ID
+    name = models.CharField(max_length=255, unique=True)  # Unique name for publisher
+    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 
+    def __str__(self):
+        return self.name
+
+class Developer(models.Model):
+    id = models.AutoField(primary_key=True)  # Automatically generated ID
+    name = models.CharField(max_length=255, unique=True)  # Unique name for developer
+    status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
+
+    def __str__(self):
+        return self.name
 class Product(models.Model):
     name = models.CharField(max_length=100, null = True)
     status = models.CharField(max_length=20, choices=[('available', 'Available'), ('unavailable', 'Unavailable'), ('coming_soon', 'Coming Soon')], null = True)
