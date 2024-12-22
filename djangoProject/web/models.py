@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm  
 import pandas as pd
 # Create your models here.
 
@@ -52,12 +52,15 @@ class Product(models.Model):
         return self.category.name
 
     def recommendSystem(self):
-        # Lấy tất cả các sản phẩm trong cùng danh mục với sản phẩm hiện tại
+        # Lấy tất cả các sản phẩm trong c��ng danh mục với sản phẩm hiện tại
         recommended_products = Product.objects.filter(
             category__in=self.category.all()
         ).exclude(id=self.id).distinct()  # Exclude the current product
 
-        return recommended_products
+        # Randomly select a list of recommended products
+        random_recommended_products = recommended_products.order_by('?')[:4]  # Get 4 random products
+
+        return random_recommended_products
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -90,7 +93,7 @@ class Oder(models.Model):
         ).exclude(id__in=product_ids).distinct()  # Exclude already purchased products
 
         # Randomly select a list of recommended products
-        random_recommended_products = recommended_products.order_by('?')[:4]  # Get 5 random products
+        random_recommended_products = recommended_products.order_by('?')[:5]  # Get 5 random products
 
         return random_recommended_products
 
