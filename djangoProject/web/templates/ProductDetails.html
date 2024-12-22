@@ -26,7 +26,11 @@
                                         <ul>
                                             <li><span>Developer:</span>{{ product.developer }}</li>
                                             <li><span>Publisher:</span>{{ product.publisher }}</li>
-                                            <li><span>Release Date:</span> {{ product.release_date }}</li>
+                                            {% if product.release_date == null %}
+                                                <li><span>Release Date:</span>Comming Soon</li>
+                                            {% else %}
+                                                <li><span>Release Date:</span> {{ product.release_date }}</li>
+                                            {% endif %}
                                             <li><span>Genre:</span> {{ product.get_all_categories}}</li>
                                         </ul>
                                     </div>
@@ -34,8 +38,13 @@
                             </div>
                             <div class="anime__details__btn">
                                 <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Wishlist</a>
-                                <a href="{% url 'add_to_cart' product.id %}" class="watch-btn"><span>Add To Cart</span> <i
-                                    class="fa fa-angle-right"></i></a>
+                                 {% if product.status == 'available' %}
+                                    <a href="{% url 'add_to_cart' product.id %}" class="watch-btn"><span>Add To Cart</span> <i class="fa fa-angle-right"></i></a>
+                                 {% elif product.status == 'coming_soon' %}
+                                    <a href="#" class="watch-btn" disabled><span>{{ product.status }}</span></a>
+                                 {% else %}
+                                     <a href="#" class="watch-btn" disabled><span>{{ product.status }}</span></a>
+                                 {% endif %}
                                 </div>
                             </div>
                         </div>
