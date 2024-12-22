@@ -124,6 +124,9 @@ def view_cart(request):
 
 # Thêm một sản phẩm vào giỏ hàng
 def add_to_cart(request, product_id):
+    if not request.user.is_authenticated: # đăng nhập để thêm game vào giỏ hàng
+        return redirect('login')  # chuyển hướng đến trang đăng nhập
+    
     product = Product.objects.get(id=product_id)  # Lấy sản phẩm từ ID
 
     # Nếu giỏ hàng chưa tồn tại trong session, tạo mới một giỏ hàng là từ điển
