@@ -80,43 +80,10 @@ def productDetails(request):
     Id = request.GET.get('id', '')
     products = Product.objects.filter(id=Id)
     categories = Category.objects.filter(is_sub=False)
-    context = {'products': products, 'categories': categories, 'items': items, 'order': order, 'cartItems': cartItems}
+    current_product = products.first() if products.exists() else None
+    recommended_products = current_product.recommendSystem() if current_product else []  # Gợi ý sản phẩm
+    context = {'products': products, 'categories': categories, 'items': items, 'order': order, 'cartItems': cartItems,'recommended_products': recommended_products}
     return render(request, '../templates/ProductDetails.html', context)
-
-
-# # chức năng thêm vào giỏ hàng
-# def view_cart(request):
-#     if request.user.is_authenticated:
-#         customer = request.user
-#         order, created = Oder.objects.get_or_create(customer=customer, complete=False)
-#         items = order.oder_iterm_set.all()
-#     else:
-#         items = []
-#         order = {'get_cart_iterm': 0, 'get_cart_total': 0}
-#     context = {'items': items, 'order': order}
-#     return render(request, '../templates/cart.html', context)
-# def updateItem(request):
-#     data = json.loads(request.body)
-#     productId = data['productId']
-#     action = data['action']
-#     customer = request.user
-#     product = Product.objects.get(id=productId)
-#     order, created = Oder.objects.get_or_create(customer=customer, complete=False)
-#     orderItem, created = Oder_Iterm.objects.get_or_create(oder=order, product=product)
-
-#     if action == 'add':
-#         orderItem.quantity += 1
-#     elif action == 'remove':
-#         orderItem.quantity -= 1
-    
-#     orderItem.save()
-    
-#     if orderItem.quantity <= 0:
-#         orderItem.delete()
-    
-#     return JsonResponse('added', safe=False)
-
-
 # chức năng thêm vào giỏ hàng
 def view_cart(request):
     # Lấy giỏ hàng từ session, mặc định là dictionary rỗng nếu không có

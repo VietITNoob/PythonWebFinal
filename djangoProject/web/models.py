@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from mlxtend.frequent_patterns import apriori,association_rules
 import pandas as pd
 # Create your models here.
 
@@ -51,6 +50,14 @@ class Product(models.Model):
         return ', '.join([category.name for category in self.category.all()])
     def get_category_name(self):
         return self.category.name
+
+    def recommendSystem(self):
+        # Lấy tất cả các sản phẩm trong cùng danh mục với sản phẩm hiện tại
+        recommended_products = Product.objects.filter(
+            category__in=self.category.all()
+        ).exclude(id=self.id).distinct()  # Exclude the current product
+
+        return recommended_products
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -82,7 +89,10 @@ class Oder(models.Model):
             category__in=Product.objects.filter(id__in=product_ids).values_list('category', flat=True)
         ).exclude(id__in=product_ids).distinct()  # Exclude already purchased products
 
-        return recommended_products
+        # Randomly select a list of recommended products
+        random_recommended_products = recommended_products.order_by('?')[:4]  # Get 5 random products
+
+        return random_recommended_products
 
 class Oder_Iterm(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
