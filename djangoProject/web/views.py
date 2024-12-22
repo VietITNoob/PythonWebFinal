@@ -9,8 +9,16 @@ import json
 # Create your views here.
 def home(request):
     products = Product.objects.all()
-    context = {'products': products}
-    return render(request, '../templates/index.html', context)
+    
+    # Check if the user is authenticated before accessing their orders
+    if request.user.is_authenticated:
+        current_order = Oder.objects.filter(customer=request.user).last()  # Lấy đơn hàng mới nhất của người dùng
+        recommended_products = current_order.recommendSystem() if current_order else []
+    else:
+        recommended_products = []  # No recommendations for unauthenticated users
+
+    context = {'products': products, 'recommended_products': recommended_products}
+    return render(request, 'index.html', context)
 def loginPage(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -289,7 +297,7 @@ def user_history(request):
                 'product_image': item.product.ImageURL,    # Hình ảnh game
                 'product_name': item.product.name,         # Tên game
                 'quantity': item.quantity,                 # Số lượng
-                'price': item.product.price,               # Giá của sản ph���m
+                'price': item.product.price,               # Giá của sản phẩm
                 'total': item.get_total,                   # Tổng giá cho từng sản phẩm
                 'date_added': item.date_added              # Ngày mua sản phẩm
             })

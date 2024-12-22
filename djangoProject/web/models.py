@@ -51,7 +51,6 @@ class Product(models.Model):
         return ', '.join([category.name for category in self.category.all()])
     def get_category_name(self):
         return self.category.name
-
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -72,6 +71,18 @@ class Oder(models.Model):
         orderiterm = self.oder_iterm_set.all()
         total = sum([item.get_total for item in orderiterm])
         return total
+
+    def recommendSystem(self):
+        # Lấy tất cả các sản phẩm trong đơn hàng
+        ordered_items = self.oder_iterm_set.all()
+        product_ids = [item.product.id for item in ordered_items if item.product]
+
+        # Tìm các sản phẩm khác trong cùng danh mục với các sản phẩm đã đặt
+        recommended_products = Product.objects.filter(
+            category__in=Product.objects.filter(id__in=product_ids).values_list('category', flat=True)
+        ).exclude(id__in=product_ids).distinct()  # Exclude already purchased products
+
+        return recommended_products
 
 class Oder_Iterm(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
