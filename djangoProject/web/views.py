@@ -166,7 +166,7 @@ def add_to_cart(request, product_id):
     # Thêm thông báo thành công
     messages.success(request, f'Added {product.name} to cart!')  # Thông báo sản phẩm đã được thêm vào giỏ hàng
 
-    return JsonResponse({'message': f'Added {product.name} to cart!'}, status=200)  # Trả về thông báo thành công
+    return redirect('view_cart')  # Chuyển hướng đến trang giỏ hàng
 
 
 # Xóa sản phẩm khỏi giỏ hàng
