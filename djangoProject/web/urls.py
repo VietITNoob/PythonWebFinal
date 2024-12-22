@@ -25,6 +25,6 @@ urlpatterns = [
     path('user_history/', views.user_history, name='user_history'),
     path('user_wishlist/', views.user_wishlist, name='user_wishlist'),
     path('checkout/', views.checkout, name='checkout'),
-
+    path('ViewAll/', views.ViewAll, name='ViewAll'),
 ]
 

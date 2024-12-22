@@ -53,18 +53,27 @@ def search(request):
 def productDetails(request):
     if request.user.is_authenticated:
         customer = request.user
-        order, created = Oder.objects.get_or_create(customer=customer,complete=False)
-        items = order.oder_iterm_set.all()
-        cartItems = order.get_cart_items
+        # Sử dụng filter để lấy tất cả đơn hàng phù hợp
+        orders = Oder.objects.filter(customer=customer, complete=False)
+        
+        if orders.exists():
+            order = orders.first()  # Lấy đơn hàng đầu tiên nếu có nhiều đơn hàng
+            items = order.oder_iterm_set.all()
+            cartItems = order.get_cart_items
+        else:
+            items = []
+            order = {'get_cart_iterm': 0, 'get_cart_total': 0}
+            cartItems = order['get_cart_iterm']
     else:
         items = []
-        order = {'get_cart_iterm':0, 'get_cart_total':0}
+        order = {'get_cart_iterm': 0, 'get_cart_total': 0}
         cartItems = order['get_cart_iterm']
-    Id = request.GET.get('id','')
+    
+    Id = request.GET.get('id', '')
     products = Product.objects.filter(id=Id)
-    categories = Category.objects.filter(is_sub = False)
-    context = {'products':products ,'categories':categories, 'items':items, 'order':order, 'cartItems':cartItems }
-    return render(request, '../templates/ProductDetails.html',context)
+    categories = Category.objects.filter(is_sub=False)
+    context = {'products': products, 'categories': categories, 'items': items, 'order': order, 'cartItems': cartItems}
+    return render(request, '../templates/ProductDetails.html', context)
 
 
 # # chức năng thêm vào giỏ hàng
@@ -277,7 +286,7 @@ def user_history(request):
                 'product_image': item.product.ImageURL,    # Hình ảnh game
                 'product_name': item.product.name,         # Tên game
                 'quantity': item.quantity,                 # Số lượng
-                'price': item.product.price,               # Giá của sản phẩm
+                'price': item.product.price,               # Giá của sản ph���m
                 'total': item.get_total,                   # Tổng giá cho từng sản phẩm
                 'date_added': item.date_added              # Ngày mua sản phẩm
             })
@@ -297,3 +306,8 @@ def user_wishlist(request):
 
 def checkout(request):
     return render(request,'../templates/checkout.html')
+
+def ViewAll(request):
+    products = Product.objects.all()
+    context = {'products': products}
+    return render(request,'../templates/ViewAll.html',context)

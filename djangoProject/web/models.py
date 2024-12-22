@@ -37,7 +37,6 @@ class Product(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.SET_NULL, null=True, blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-
     def __str__(self):
         return self.name
     @property
@@ -50,30 +49,8 @@ class Product(models.Model):
 
     def get_all_categories(self):
         return ', '.join([category.name for category in self.category.all()])
-
-    def get_recommendations(self):
-        
-        # Lấy tất cả các đơn hàng
-        orders = Oder.objects.all()
-        
-        # Tạo DataFrame từ các đơn hàng
-        order_data = []
-        for order in orders:
-            items = order.oder_iterm_set.all()
-            order_data.append([item.product.id for item in items])
-        
-        # Chuyển đổi dữ liệu thành DataFrame
-        df = pd.DataFrame(order_data)
-        
-        # Tính toán các quy tắc kết hợp
-        frequent_itemsets = apriori(df, min_support=0.01, use_colnames=True)
-        rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1)
-        
-        # Lấy các sản phẩm liên quan đến sản phẩm hiện tại
-        related_products = rules[rules['antecedents'].apply(lambda x: self.id in x)]
-        
-        # Trả về danh sách các sản phẩm gợi ý
-        return [Product.objects.get(id=product_id) for product_id in related_products['consequents']]
+    def get_category_name(self):
+        return self.category.name
 
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
@@ -105,7 +82,6 @@ class Oder_Iterm(models.Model):
 
     def __str__(self):
         return str(self.id)
-        #   return f"OrderItem {self.id} for {self.user}"
     @property
     def get_total(self):
         total = self.product.price * self.quantity
