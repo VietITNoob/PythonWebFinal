@@ -12,16 +12,16 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 class Publisher(models.Model):
-    id = models.AutoField(primary_key=True)  # Automatically generated ID
-    name = models.CharField(max_length=255, unique=True)  # Unique name for publisher
+    id = models.AutoField(primary_key=True)  
+    name = models.CharField(max_length=255, unique=True) 
     status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 
     def __str__(self):
         return self.name
 
 class Developer(models.Model):
-    id = models.AutoField(primary_key=True)  # Automatically generated ID
-    name = models.CharField(max_length=255, unique=True)  # Unique name for developer
+    id = models.AutoField(primary_key=True)  
+    name = models.CharField(max_length=255, unique=True)  
     status = models.CharField(max_length=10, choices=[('active', 'Active'), ('inactive', 'Inactive')], default='active')  # Status field
 
     def __str__(self):
@@ -52,13 +52,11 @@ class Product(models.Model):
         return self.category.name
 
     def recommendSystem(self):
-        # Lấy tất cả các sản phẩm trong c��ng danh mục với sản phẩm hiện tại
         recommended_products = Product.objects.filter(
             category__in=self.category.all()
-        ).exclude(id=self.id).distinct()  # Exclude the current product
+        ).exclude(id=self.id).distinct()  
 
-        # Randomly select a list of recommended products
-        random_recommended_products = recommended_products.order_by('?')[:4]  # Get 4 random products
+        random_recommended_products = recommended_products.order_by('?').distinct()[:4]
 
         return random_recommended_products
 class Oder(models.Model):
@@ -92,8 +90,8 @@ class Oder(models.Model):
             category__in=Product.objects.filter(id__in=product_ids).values_list('category', flat=True)
         ).exclude(id__in=product_ids).distinct()  # Exclude already purchased products
 
-        # Randomly select a list of recommended products
-        random_recommended_products = recommended_products.order_by('?')[:5]  # Get 5 random products
+        # Randomly select a list of recommended products without duplicates
+        random_recommended_products = recommended_products.order_by('?').distinct()[:5]  # Lấy 5 sản phẩm ngẫu nhiên
 
         return random_recommended_products
 

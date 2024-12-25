@@ -2,14 +2,16 @@ from lib2to3.fixes.fix_input import context
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from tqdm.contrib.itertools import product
+
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 import json
 # Create your views here.
 def home(request):
+    categories = Category.objects.filter(is_sub=False)
     products = Product.objects.all()
-    
     # Check if the user is authenticated before accessing their orders
     if request.user.is_authenticated:
         current_order = Oder.objects.filter(customer=request.user).last()  # Lấy đơn hàng mới nhất của người dùng
@@ -17,7 +19,7 @@ def home(request):
     else:
         recommended_products = []  # No recommendations for unauthenticated users
 
-    context = {'products': products, 'recommended_products': recommended_products}
+    context = {'products': products, 'recommended_products': recommended_products,'categories': categories}
     return render(request, 'index.html', context)
 def loginPage(request):
     if request.method == 'POST':
@@ -30,8 +32,9 @@ def loginPage(request):
         else:
             messages.info(request, 'Invalid username or password !')
         return redirect('login')
-
-    return render(request, '../templates/login.html', {})
+    categories = Category.objects.filter(is_sub=False)
+    context = {'categories': categories}
+    return render(request, '../templates/login.html', context)
 
 
 def logoutUser(request):
@@ -42,20 +45,22 @@ def logoutUser(request):
 
 # đăng kí
 def signup(request):
+    categories = Category.objects.filter(is_sub=False)
     form = CreateUserForm()
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-    context = {'form': form}
+    context = {'form': form, 'categories': categories}
     return render(request, '../templates/signup.html', context)
 
 
 def search(request):
+    categories = Category.objects.filter(is_sub=False)
     if request.method == 'POST':
         searched = request.POST['searched']
         key = Product.objects.filter(name__icontains=searched)
-    return render(request, '../templates/search.html', {'searched': searched, "key": key})
+    return render(request, '../templates/search.html', {'searched': searched, "key": key, "categories": categories})
 
 
 def productDetails(request):
@@ -88,7 +93,7 @@ def productDetails(request):
 def view_cart(request):
     # Lấy giỏ hàng từ session, mặc định là dictionary rỗng nếu không có
     cart_items = request.session.get('cart', {})
-
+    categories = Category.objects.filter(is_sub=False)
     # Kiểm tra và đảm bảo cart_items không rỗng, nếu rỗng thì trả về thông báo thích hợp
     if not cart_items:
         return render(request, 'cart.html',
@@ -103,7 +108,7 @@ def view_cart(request):
         else:
             print(f"Lỗi trong dữ liệu sản phẩm: {item}")  # Logging thông tin sản phẩm có lỗi
 
-    return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
+    return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price,'categories': categories})
 
 
 # Thêm một sản phẩm vào giỏ hàng
@@ -226,7 +231,9 @@ def user_share_temp(request):
 
 # @login_required (chưa làm xong nên chưa thêm để dễ vô)
 def user_information(request):
-    return render(request,'../templates/user_information.html')
+    categories = Category.objects.filter(is_sub=False)
+    context = {'categories': categories}
+    return render(request,'../templates/user_information.html', context)
 
 
 # def user_history(request):
@@ -249,6 +256,7 @@ def user_information(request):
 #     # Pass the data to the template
 #     return render(request, '../templates/user_history.html', {'order_items_data': order_items_data})
 def user_history(request):
+    categories = Category.objects.filter(is_sub=False)
     # Lấy tất cả đơn hàng của người dùng đã đăng nhập
     orders = Oder.objects.filter(customer=request.user)
 
@@ -276,16 +284,26 @@ def user_history(request):
         })
     
     # Truyền dữ liệu vào template
-    return render(request, 'user_history.html', {'order_items_data': order_items_data})
+    return render(request, 'user_history.html', {'order_items_data': order_items_data,'categories': categories})
 
 
 def user_wishlist(request):
-    return render(request,'../templates/user_wishlist.html')
+    categories = Category.objects.filter(is_sub=False)
+    context = {'categories': categories}
+    return render(request,'../templates/user_wishlist.html',context)
 
 def checkout(request):
     return render(request,'../templates/checkout.html')
 
 def ViewAll(request):
+    categories = Category.objects.filter(is_sub=False)
     products = Product.objects.all()
-    context = {'products': products}
+    context = {'products': products,'categories': categories}
     return render(request,'../templates/ViewAll.html',context)
+def category(request) :
+    categories = Category.objects.filter(is_sub = False)
+    active_category = request.GET.get('category','')
+    if active_category:
+        products = Product.objects.filter(category__slug = active_category)
+    context = {'products': products,'categories':categories}
+    return render(request,'categories.html',context)

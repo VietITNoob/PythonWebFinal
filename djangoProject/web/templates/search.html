@@ -19,16 +19,17 @@
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
                                     <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}">
-                                        <div class="ep">18 / 18</div>
-                                        <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                                        <div class="view"><i class="fa fa-eye"></i> 9141</div>
                                     </div>
                                     <div class="product__item__text">
                                         <ul>
-                                            <li>Action role-playing</li>
+                                            <li>Base game</li>
                                         </ul>
-                                        <h5><a href="#">{{ product.name }}</a></h5>
-                                        <h6>{{ product.price }}$</h6>
+                                       <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
+                                                    {% if product.price == 0.0 %}
+                                                    	<div class="text-white">Free to play</div>
+                                                    {% else %}
+                                                    <div class="text-white"><h6>{{ product.price }}$</h6></div>
+                                                {% endif %}
                                     </div>
                                 </div>
                             </div>

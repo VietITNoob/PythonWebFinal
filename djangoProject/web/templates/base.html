@@ -62,11 +62,9 @@
                                 <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'home' %}">Homepage</a></li>
                                 <li><a href="./categories.html">Categories <span class="arrow_carrot-down"></span></a>
                                     <ul class="dropdown">
-                                        <li><a href="./categories.html">Categories</a></li>
-                                        <li><a href="ProductDetails.html">New Games</a></li>
-                                        <li><a href="./blog-details.html">Blog Details</a></li>
-                                        <li><a href="./signup.html">Sign Up</a></li>
-                                        <li><a href="./login.html">Login</a></li>
+                                        {% for category in categories %}
+                                        <li><a href="{% url 'category' %}?category='{{ category.slug }}">{{ category.name }}</a></li>
+                                        {% endfor %}
                                     </ul>
                                 </li>
                                 {% comment %} <li><a href="{% url 'view_cart' %}">Wishlist</a></li> {% endcomment %}

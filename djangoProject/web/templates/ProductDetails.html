@@ -41,9 +41,9 @@
                                  {% if product.status == 'available' %}
                                     <a href="{% url 'add_to_cart' product.id %}" class="watch-btn"><span>Add To Cart</span> <i class="fa fa-angle-right"></i></a>
                                  {% elif product.status == 'coming_soon' %}
-                                    <a href="#" class="watch-btn" disabled><span>{{ product.status }}</span></a>
+                                    <a href="#" class="watch-btn" disabled><span>Comming Soon</span><i class="fa fa-angle-right"></i></a>
                                  {% else %}
-                                     <a href="#" class="watch-btn" disabled><span>{{ product.status }}</span></a>
+                                     <a href="#" class="watch-btn" disabled><span>{{ product.status }}</span><i class="fa fa-angle-right"></i></a>
                                  {% endif %}
                                 </div>
                             </div>

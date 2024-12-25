@@ -10,22 +10,25 @@
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-sm-8">
                                 <div class="section-title">
-                                    <h4>Result search for {{ searched }}</h4>
+                                    <h4>Result search By Category</h4>
                                 </div>
                             </div>
                         </div>
-                       <div class="row">
-                            {% for product in key %}
+                        <div class="row">
+                            {% for product in products %}
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
-                                    <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}">
-                                    </div>
+                                    <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}"></div>
                                     <div class="product__item__text">
                                         <ul>
-                                            <li>Action role-playing</li>
+                                            <li>Base game</li>
                                         </ul>
-                                        <h5><a href="#">{{ product.name }}</a></h5>
-                                        <h6>{{ product.price }}$</h6>
+                                       <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
+                                        {% if product.price == 0.0 %}
+                                            <div class="text-white">Free to play</div>
+                                        {% else %}
+                                            <div class="text-white"><h6>{{ product.price }}$</h6></div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
