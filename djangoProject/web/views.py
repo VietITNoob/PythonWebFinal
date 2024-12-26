@@ -75,11 +75,11 @@ def productDetails(request):
             # cartItems = order.get_cart_items
         else:
             items = []
-            # order = {'get_cart_iterm': 0, 'get_cart_total': 0}
+            order = {'get_cart_iterm': 0, 'get_cart_total': 0}
             # cartItems = order['get_cart_iterm']
     else:
         items = []
-        # order = {'get_cart_iterm': 0, 'get_cart_total': 0}
+        order = {'get_cart_iterm': 0, 'get_cart_total': 0}
         # cartItems = order['get_cart_iterm']
     
     Id = request.GET.get('id', '')
@@ -87,7 +87,7 @@ def productDetails(request):
     categories = Category.objects.filter(is_sub=False)
     current_product = products.first() if products.exists() else None
     recommended_products = current_product.recommendSystem() if current_product else []  # Gợi ý sản phẩm
-    context = {'products': products, 'categories': categories, 'items': items, 'order': order, 'cartItems': cartItems,'recommended_products': recommended_products}
+    context = {'products': products, 'categories': categories, 'items': items, 'order': order,'recommended_products': recommended_products}
     return render(request, '../templates/ProductDetails.html', context)
 
 
