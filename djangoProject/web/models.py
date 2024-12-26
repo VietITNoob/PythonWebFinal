@@ -36,6 +36,7 @@ class Product(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.SET_NULL, null=True, blank=True)
     publisher = models.ForeignKey(Publisher, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    sales = models.PositiveIntegerField(default=0) 
     def __str__(self):
         return self.name
     @property
@@ -50,6 +51,18 @@ class Product(models.Model):
         return ', '.join([category.name for category in self.category.all()])
     def get_category_name(self):
         return self.category.name
+    
+    @property
+    def sale_num(self):
+        num = Oder_Iterm.objects.filter(product=self).aggregate(total=models.Sum('quantity')).get('total', 0)
+        return num
+
+    # Phương thức cập nhật số lượng bán
+    def update_sales(self):
+        self.sales = self.sale_num 
+        self.save() 
+        
+        
 
     def recommendSystem(self):
         recommended_products = Product.objects.filter(
@@ -62,23 +75,22 @@ class Product(models.Model):
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
-    complete = models.BooleanField(default=False , null = True , blank = False)
-    transaction_id = models.CharField(max_length=100, null = True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
 
     def __str__(self):
         return str(self.id)
     
-    @property
-    def get_cart_items(self):
-        orderiterm = self.oder_iterm_set.all()
-        total = sum([item.quantity for item in orderiterm])
-        return total
+    # @property
+    # def get_cart_items(self):
+    #     orderiterm = self.oder_iterm_set.all()
+    #     total = sum([item.quantity for item in orderiterm])
+    #     return total
     
-    @property
-    def get_cart_total(self):
-        orderiterm = self.oder_iterm_set.all()
-        total = sum([item.get_total for item in orderiterm])
-        return total
+    # @property
+    # def get_cart_total(self):
+    #     orderiterm = self.oder_iterm_set.all()
+    #     total = sum([item.get_total for item in orderiterm])
+    #     return total
 
     def recommendSystem(self):
         # Lấy tất cả các sản phẩm trong đơn hàng
@@ -100,14 +112,15 @@ class Oder_Iterm(models.Model):
     oder = models.ForeignKey(Oder, on_delete=models.SET_NULL, null=True, blank=True)
     date_order = models.DateField(auto_now_add=True)
     quantity = models.IntegerField(default=0, null = True, blank = True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date_added = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return str(self.id)
-    @property
-    def get_total(self):
-        total = self.product.price * self.quantity
-        return total
+    # @property
+    # def get_total(self):
+    #     total = self.product.price * self.quantity
+    #     return total
 
 class CreateUserForm(UserCreationForm):
     class Meta:

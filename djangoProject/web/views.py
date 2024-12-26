@@ -67,20 +67,20 @@ def productDetails(request):
     if request.user.is_authenticated:
         customer = request.user
         # Sử dụng filter để lấy tất cả đơn hàng phù hợp
-        orders = Oder.objects.filter(customer=customer, complete=False)
+        orders = Oder.objects.filter(customer=customer)
         
         if orders.exists():
             order = orders.first()  # Lấy đơn hàng đầu tiên nếu có nhiều đơn hàng
-            items = order.oder_iterm_set.all()
-            cartItems = order.get_cart_items
+            # items = order.oder_iterm_set.all()
+            # cartItems = order.get_cart_items
         else:
             items = []
-            order = {'get_cart_iterm': 0, 'get_cart_total': 0}
-            cartItems = order['get_cart_iterm']
+            # order = {'get_cart_iterm': 0, 'get_cart_total': 0}
+            # cartItems = order['get_cart_iterm']
     else:
         items = []
-        order = {'get_cart_iterm': 0, 'get_cart_total': 0}
-        cartItems = order['get_cart_iterm']
+        # order = {'get_cart_iterm': 0, 'get_cart_total': 0}
+        # cartItems = order['get_cart_iterm']
     
     Id = request.GET.get('id', '')
     products = Product.objects.filter(id=Id)
@@ -89,6 +89,8 @@ def productDetails(request):
     recommended_products = current_product.recommendSystem() if current_product else []  # Gợi ý sản phẩm
     context = {'products': products, 'categories': categories, 'items': items, 'order': order, 'cartItems': cartItems,'recommended_products': recommended_products}
     return render(request, '../templates/ProductDetails.html', context)
+
+
 # chức năng thêm vào giỏ hàng
 def view_cart(request):
     # Lấy giỏ hàng từ session, mặc định là dictionary rỗng nếu không có
@@ -202,9 +204,8 @@ def buy(request):
     if cart_items:  # Nếu giỏ hàng không trống
         # Tạo oder mới
         oder = Oder.objects.create(
-            customer=request.user,
-            
-            # price=sum(item['price'] * item['quantity'] for item in cart_items.values()),
+            customer=request.user, 
+            price=sum(item['price'] * item['quantity'] for item in cart_items.values()),
         )
 
         # Thêm các OrderItem
@@ -214,7 +215,11 @@ def buy(request):
                 product=product,
                 oder=oder,
                 quantity=item['quantity'],
+                price=product.price, # giá tại thời điểm mua hàng
             )
+            # product.sales += item['quantity'] # tăng số lượng bán của sản phẩm lên 
+            product.update_sales()
+       
         # Xóa giỏ hàng sau khi xử lý thành công
         del request.session['cart']
 
@@ -229,33 +234,18 @@ def buy(request):
 def user_share_temp(request):
     return render(request,'../templates/user_share_temp.html')
 
-# @login_required (chưa làm xong nên chưa thêm để dễ vô)
 def user_information(request):
+     # Kiểm tra nếu người dùng chưa đăng nhập
+    if not request.user.is_authenticated:
+        return redirect('login')  # chuyển hướng đến trang đăng nhập
     categories = Category.objects.filter(is_sub=False)
     context = {'categories': categories}
     return render(request,'../templates/user_information.html', context)
 
-
-# def user_history(request):
-#     return render(request,'../templates/user_history.html')
-
-# @login_required  
-# def user_history(request):
-#     # Get all orders for the logged-in user
-#     orders = Oder.objects.filter(customer=request.user)
-
-#     # Prepare the order items data for each order
-#     order_items_data = []
-#     for order in orders:
-#         order_items = Oder_Iterm.objects.filter(oder=order)
-#         order_items_data.append({
-#             'order': order,
-#             'order_items': order_items
-#         })
-    
-#     # Pass the data to the template
-#     return render(request, '../templates/user_history.html', {'order_items_data': order_items_data})
 def user_history(request):
+     # Kiểm tra nếu người dùng chưa đăng nhập
+    if not request.user.is_authenticated:
+        return redirect('login')  # chuyển hướng đến trang đăng nhập
     categories = Category.objects.filter(is_sub=False)
     # Lấy tất cả đơn hàng của người dùng đã đăng nhập
     orders = Oder.objects.filter(customer=request.user)
@@ -272,8 +262,8 @@ def user_history(request):
                 'product_image': item.product.ImageURL,    # Hình ảnh game
                 'product_name': item.product.name,         # Tên game
                 'quantity': item.quantity,                 # Số lượng
-                'price': item.product.price,               # Giá của sản phẩm
-                'total': item.get_total,                   # Tổng giá cho từng sản phẩm
+                'price': item.price,                       # Giá của sản phẩm
+                'total': item.quantity * item.price,       # Tổng giá cho từng sản phẩm
                 'date_added': item.date_added              # Ngày mua sản phẩm
             })
         
@@ -288,6 +278,9 @@ def user_history(request):
 
 
 def user_wishlist(request):
+     # Kiểm tra nếu người dùng chưa đăng nhập
+    if not request.user.is_authenticated:
+        return redirect('login')  # chuyển hướng đến trang đăng nhập
     categories = Category.objects.filter(is_sub=False)
     context = {'categories': categories}
     return render(request,'../templates/user_wishlist.html',context)
