@@ -1,25 +1,39 @@
-from lib2to3.fixes.fix_input import context
-
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from tqdm.contrib.itertools import product
-
 from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-import json
+
 # Create your views here.
 def home(request):
+    """
+    Home View: Displays main products and recommended products based on order history.
+    """
     categories = Category.objects.filter(is_sub=False)
     products = Product.objects.all()
-    # Check if the user is authenticated before accessing their orders
-    if request.user.is_authenticated:
-        current_order = Oder.objects.filter(customer=request.user).last()  # Lấy đơn hàng mới nhất của người dùng
-        recommended_products = current_order.recommendSystem() if current_order else []
-    else:
-        recommended_products = []  # No recommendations for unauthenticated users
 
-    context = {'products': products, 'recommended_products': recommended_products,'categories': categories}
+    # Check if the user is authenticated for recommendations
+    if request.user.is_authenticated:
+        current_order = Oder.objects.filter(customer=request.user).last()
+
+        # Handle recommendation only if an order exists
+        if current_order:
+            try:
+                recommended_products = current_order.recommendSystem()
+            except Exception as e:
+                print("Error in recommendation system:", e)
+                recommended_products = []
+        else:
+            recommended_products = []
+    else:
+        recommended_products = []
+
+    context = {
+        'products': products,
+        'recommended_products': recommended_products,
+        'categories': categories
+    }
+
     return render(request, 'index.html', context)
 def loginPage(request):
     if request.method == 'POST':
@@ -51,6 +65,7 @@ def signup(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+
     context = {'form': form, 'categories': categories}
     return render(request, '../templates/signup.html', context)
 
@@ -64,30 +79,49 @@ def search(request):
 
 
 def productDetails(request):
+    """
+    View to display product details and recommendations based on the current product.
+    """
     if request.user.is_authenticated:
         customer = request.user
-        # Sử dụng filter để lấy tất cả đơn hàng phù hợp
         orders = Oder.objects.filter(customer=customer)
-        
+
+        # Get items and prepare the order summary
         if orders.exists():
-            order = orders.first()  # Lấy đơn hàng đầu tiên nếu có nhiều đơn hàng
-            # items = order.oder_iterm_set.all()
-            # cartItems = order.get_cart_items
+            order = orders.first()  # Retrieve the first order if multiple exist
+            items = order.oder_iterm_set.all()
         else:
             items = []
             order = {'get_cart_iterm': 0, 'get_cart_total': 0}
-            # cartItems = order['get_cart_iterm']
     else:
         items = []
         order = {'get_cart_iterm': 0, 'get_cart_total': 0}
-        # cartItems = order['get_cart_iterm']
-    
-    Id = request.GET.get('id', '')
-    products = Product.objects.filter(id=Id)
+
+    # Fetch product details based on ID from GET parameters
+    product_id = request.GET.get('id', '')
+    products = Product.objects.filter(id=product_id)
     categories = Category.objects.filter(is_sub=False)
+
     current_product = products.first() if products.exists() else None
-    recommended_products = current_product.recommendSystem() if current_product else []  # Gợi ý sản phẩm
-    context = {'products': products, 'categories': categories, 'items': items, 'order': order,'recommended_products': recommended_products}
+
+    # Fetch recommendations for the current product
+    if current_product:
+        try:
+            recommended_products = current_product.recommendSystem()
+        except Exception as e:
+            print("Error in product recommendation:", e)
+            recommended_products = []
+    else:
+        recommended_products = []
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'items': items,
+        'order': order,
+        'recommended_products': recommended_products
+    }
+
     return render(request, '../templates/ProductDetails.html', context)
 
 

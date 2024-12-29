@@ -5,12 +5,12 @@
     <section class="hero">
         <div class="container">
             <div class="hero__slider owl-carousel">
-                {% for product in products|slice:":6"%}
+                {% for product in products|slice:":4"%}
                 <div class="hero__items set-bg" data-setbg="{{ product.ImageURL }}">
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="hero__text">
-                                <div class="label">{{ product.get_category_name }}</div>
+                                <div class="label">Base Game</div>
                                 <h2>{{ product.name }}</h2>
                                 <p>{{ product.description }}</p>
                                 {% if product.price > 0.0 %}
@@ -27,27 +27,28 @@
         </div>
     </section>
     <!-- Hero Section End -->
+    
     <!-- Product Section Begin -->
     <section class="product spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
-                  {% if request.user.is_authenticated and recommended_products%}
-                        <div class="trending__product">
-                            <div class="row">
-                                <div class="col-lg-8 col-md-8 col-sm-8">
-                                    <div class="section-title">
-                                        <h4>You might like</h4>
+                    {% if request.user.is_authenticated and recommended_products %}
+                            <div class="trending__product">
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <div class="section-title">
+                                            <h4>You might like</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <div class="btn__all">
+                                            <a href="{% url 'ViewAll' %}" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4">
-                                    <div class="btn__all">
-                                        <a href="{% url 'ViewAll' %}" class="primary-btn">View All <span class="arrow_right"></span></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                {% for product in recommended_products %}
+                                <div class="row">
+                                    {% for product in recommended_products %}
                                         <div class="col-lg-4 col-md-6 col-sm-6">
                                             <div class="product__item">
                                                 <div class="product__item__pic set-bg" data-setbg="{{ product.ImageURL }}"></div>
@@ -57,17 +58,30 @@
                                                     </ul>
                                                     <h5><a href="{% url 'productDetail' %}?id={{ product.id }}">{{ product.name }}</a></h5>
                                                     {% if product.price == 0.0 %}
-                                                    	<div class="text-white">Free to play</div>
+                                                        <div class="text-white">Free to play</div>
                                                     {% else %}
-                                                    <div class="text-white"><h6>{{ product.price }}$</h6></div>
-                                                {% endif %}
+                                                        <div class="text-white">{{ product.price }}$</div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="trending__product">
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <div class="section-title">
+                                            <h4>You might like</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>No recommendations available. Start shopping to get personalized suggestions!</p>
+                            </div>
+                        {% endif %}
+                    
+                    <!-- Other product sections (Trending Now, Free to Play, etc.) -->
                     <div class="trending__product">
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-sm-8">

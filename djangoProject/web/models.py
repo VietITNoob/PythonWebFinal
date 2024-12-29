@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm  
 import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
 # Create your models here.
 
 class Category(models.Model):
@@ -60,18 +61,7 @@ class Product(models.Model):
     # Phương thức cập nhật số lượng bán
     def update_sales(self):
         self.sales = self.sale_num 
-        self.save() 
-        
-        
-
-    def recommendSystem(self):
-        recommended_products = Product.objects.filter(
-            category__in=self.category.all()
-        ).exclude(id=self.id).distinct()  
-
-        random_recommended_products = recommended_products.order_by('?').distinct()[:4]
-
-        return random_recommended_products
+        self.save()
 class Oder(models.Model):
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, null = True, blank = True)
     date_order = models.DateField(auto_now_add=True)
@@ -93,19 +83,71 @@ class Oder(models.Model):
     #     return total
 
     def recommendSystem(self):
-        # Lấy tất cả các sản phẩm trong đơn hàng
-        ordered_items = self.oder_iterm_set.all()
-        product_ids = [item.product.id for item in ordered_items if item.product]
+        """
+        Gợi ý sản phẩm dựa trên luật kết hợp (association rules) từ dữ liệu chi tiêu và danh mục sản phẩm.
+        """
+        try:
+            # --- Bước 1: Lấy dữ liệu chi tiêu của người dùng ---
+            all_orders = Oder.objects.filter(customer=self.customer)
+            order_items = Oder_Iterm.objects.filter(oder__in=all_orders).select_related('product')
 
-        # Tìm các sản phẩm khác trong cùng danh mục với các sản phẩm đã đặt
-        recommended_products = Product.objects.filter(
-            category__in=Product.objects.filter(id__in=product_ids).values_list('category', flat=True)
-        ).exclude(id__in=product_ids).distinct()  # Exclude already purchased products
+            # Chuẩn bị dữ liệu
+            data = []
+            for item in order_items:
+                product_categories = item.product.category.all()
+                for category in product_categories:
+                    data.append({
+                        'order_id': item.oder.id,
+                        'category': category.name,
+                        'amount_spent': float(item.quantity) * float(item.price)
+                    })
 
-        # Randomly select a list of recommended products without duplicates
-        random_recommended_products = recommended_products.order_by('?').distinct()[:5]  # Lấy 5 sản phẩm ngẫu nhiên
+            # Chuyển đổi sang DataFrame
+            df = pd.DataFrame(data)
+            if df.empty:
+                return Product.objects.none()
 
-        return random_recommended_products
+            # Pivot Table
+            df['amount_spent_bin'] = pd.qcut(df['amount_spent'], q=4, labels=['Thấp', 'Trung bình', 'Cao', 'Rất cao'])
+            pivot_table = df.pivot_table(index='order_id', columns='category', aggfunc='size', fill_value=0).astype(
+                bool)
+
+            # --- Bước 3: Áp dụng thuật toán Apriori ---
+            frequent_itemsets = apriori(pivot_table, min_support=0.1, use_colnames=True)
+            if frequent_itemsets.empty:  # Kiểm tra nếu không có tập phổ biến
+                return Product.objects.none()
+
+            # Tính số lượng tập phổ biến
+            frequent_itemsets['support_count'] = frequent_itemsets['support'] * len(pivot_table)
+            num_itemsets = len(frequent_itemsets)
+
+            # --- Bước 4: Tạo luật kết hợp ---
+            rules = association_rules(
+                frequent_itemsets,
+                metric='lift',
+                min_threshold=1.0,
+                num_itemsets=num_itemsets
+            )
+
+            # Lọc các danh mục sản phẩm
+            recommended_categories = set()
+            for _, row in rules.iterrows():
+                for consequent in row['consequents']:
+                    if consequent not in recommended_categories:
+                        recommended_categories.add(consequent)
+
+            # Gợi ý sản phẩm
+            recommended_products = Product.objects.filter(
+                category__name__in=recommended_categories
+            ).exclude(
+                id__in=[item.product.id for item in order_items]
+            ).distinct()
+
+            return recommended_products[:5]  # Giới hạn số lượng gợi ý
+
+        except Exception as e:
+            print(f"Lỗi trong hệ thống gợi ý: {e}")
+            return Product.objects.none()
 
 class Oder_Iterm(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null = True, blank = True)
