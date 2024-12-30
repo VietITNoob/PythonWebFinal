@@ -194,3 +194,13 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wishlists")  # Người dùng
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="wishlisted_by")  # Sản phẩm (game)
+    date_added = models.DateTimeField(auto_now_add=True)  # Ngày thêm vào danh sách yêu thích
+
+    class Meta:
+        unique_together = ('user', 'product')  # Đảm bảo mỗi người chỉ có thể thêm một game một lần vào wishlist
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name}"

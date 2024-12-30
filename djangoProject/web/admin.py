@@ -7,6 +7,7 @@ admin.site.register(Oder)
 admin.site.register(Oder_Iterm)
 admin.site.register(Publisher)
 admin.site.register(Developer)
+admin.site.register(Wishlist)
 
 
 

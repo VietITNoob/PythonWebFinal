@@ -101,8 +101,10 @@ def productDetails(request):
     product_id = request.GET.get('id', '')
     products = Product.objects.filter(id=product_id)
     categories = Category.objects.filter(is_sub=False)
-
     current_product = products.first() if products.exists() else None
+    is_in_wishlist = False
+    if request.user.is_authenticated:
+        is_in_wishlist = Wishlist.objects.filter(user=request.user, product=current_product).exists() # kiểm tra xem có trong wishlist của người dùng chưa
 
     # Fetch recommendations for the current product
     if current_product:
@@ -119,7 +121,8 @@ def productDetails(request):
         'categories': categories,
         'items': items,
         'order': order,
-        'recommended_products': recommended_products
+        'recommended_products': recommended_products,
+        'is_in_wishlist': is_in_wishlist
     }
 
     return render(request, '../templates/ProductDetails.html', context)
@@ -334,3 +337,34 @@ def category(request) :
         products = Product.objects.filter(category__slug = active_category)
     context = {'products': products,'categories':categories}
     return render(request,'categories.html',context)
+
+def add_wishlist(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('login')  # Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+    
+    product = Product.objects.get(id=product_id)  # Lấy sản phẩm theo ID
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+
+    if created:
+        messages.success(request, f"{product.name} added your wish list.")
+    # else:
+    #     messages.info(request, f"{product.name} is ex.") 
+
+    # Chuyển hướng về trang trước đó (hoặc chuyển về trang home nếu không có referrer)
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+def remove_wishlist(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('login')  # Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+    
+    product = Product.objects.get(id=product_id)  # Lấy sản phẩm theo ID
+    wishlist_item = Wishlist.objects.filter(user=request.user, product=product).first()
+
+    if wishlist_item:
+        wishlist_item.delete()
+        messages.success(request, f"{product.name} removed your wish list!")
+    # else:
+    #     messages.info(request, f"{product.name} không có trong danh sách yêu thích của bạn.")
+
+    # Chuyển hướng về trang trước đó (hoặc chuyển về trang home nếu không có referrer)
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
