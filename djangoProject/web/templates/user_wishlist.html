@@ -1,5 +1,182 @@
 {% extends "user_share_temp.html" %}
 
+{% block css_user %}
+<style>
+    .order-list {
+        width: 80%;
+        margin: 20px auto;
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: center;
+    }
+
+    th {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: none;
+    }
+
+    td {
+        background: #ffffff;
+        color: #333;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background: rgba(37, 117, 252, 0.1);
+        transition: background 0.3s ease;
+    }
+
+    tbody tr:nth-child(odd) {
+        background: #f9f9f9;
+    }
+
+    td img {
+        border-radius: 5px;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    td img:hover {
+        transform: scale(1.1);
+    }
+
+    p {
+        font-size: 18px;
+        color: #444;
+        text-align: center;
+        padding: 20px;
+    }
+
+    /* Add responsiveness */
+    @media (max-width: 768px) {
+        .order-list {
+            width: 95%;
+        }
+
+        th, td {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        td img {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    /* Styling for the remove button */
+    .remove-btn {
+        color: red;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .remove-btn:hover {
+        color: darkred;
+    }
+
+    .watch-btn {
+        text-decoration: none;
+        color: #2575fc;
+    }
+
+    .watch-btn:hover {
+        text-decoration: underline;
+    }
+    .watch-btn {
+        text-decoration: none;
+        color: #2575fc;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 8px 12px;
+        border: 2px solid #2575fc;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .watch-btn:hover {
+        color: white;
+        background-color: #2575fc;
+        border-color: #1a5eb9;
+        transform: scale(1.05);
+    }
+    
+    /* Thêm hiệu ứng hover cho nút "X" (remove from wishlist) */
+    .remove-btn {
+        color: red;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-btn:hover {
+        color: darkred;
+        background-color: rgba(255, 0, 0, 0.1);
+        border-radius: 50%;
+        transform: scale(1.2);
+    }
+
+</style>
+{% endblock css_user %}
+
 {% block right_content %}
-    <h1><strong>YOUR WISTLIST</strong></h1>
+<h1><strong>YOUR WISHLIST</strong></h1>
+<div class="order-list">
+    {% if data_wish_list_view %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Date Added</th>
+                    <th>Action</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data_wish_list_view %}
+                    <tr>
+                        <td><img src="{{ item.product_image.url }}" alt="Product Image" width="60" height="60"></td>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.price }}$</td>
+                        <td>{{ item.date_added }}</td>
+                        <td>
+                            <a href="{% url 'add_to_cart' item.product_id %}" class="watch-btn"><span><strong>ADD</strong></span></a>
+                        </td>
+                        <td>
+                            <a href="{% url 'remove_wishlist' item.product_id %}" class="remove-btn"><strong>X</strong></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No items in your wishlist.</p>
+    {% endif %}
+</div>
 {% endblock right_content %}

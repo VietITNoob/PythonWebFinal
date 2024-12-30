@@ -315,12 +315,34 @@ def user_history(request):
 
 
 def user_wishlist(request):
-     # Kiểm tra nếu người dùng chưa đăng nhập
+    # Kiểm tra nếu người dùng chưa đăng nhập
     if not request.user.is_authenticated:
         return redirect('login')  # chuyển hướng đến trang đăng nhập
+
+    # Lấy tất cả danh mục không phải subcategories
     categories = Category.objects.filter(is_sub=False)
-    context = {'categories': categories}
-    return render(request,'../templates/user_wishlist.html',context)
+
+    # Lấy danh sách wishlist của người dùng đã đăng nhập
+    list_wish = Wishlist.objects.filter(user=request.user)
+
+    # Lấy tất cả các sản phẩm trong wishlist để giảm số lượng truy vấn
+    products_in_wishlist = Product.objects.filter(id__in=[game.product.id for game in list_wish])
+
+    # Chuẩn bị dữ liệu để gửi đến template
+    data_wish_list_view = []
+    for game in list_wish:
+        product = products_in_wishlist.get(id=game.product.id)  # Lấy sản phẩm từ danh sách đã lấy trước đó
+        data_wish_list_view.append({
+            'product_image': product.image,    # Hình ảnh sản phẩm
+            'product_name': product.name,      # Tên sản phẩm
+            'price': product.price,            # Giá của sản phẩm
+            'date_added': game.date_added,      # Ngày thêm vào wishlist
+            'product_id': product.id,          # Thêm ID sản phẩm vào context
+        })
+
+    # Truyền dữ liệu vào context
+    context = {'categories': categories, 'data_wish_list_view': data_wish_list_view}
+    return render(request, 'user_wishlist.html', context)
 
 def checkout(request):
     return render(request,'../templates/checkout.html')
